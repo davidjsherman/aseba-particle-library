@@ -4,7 +4,7 @@
 #include "application.h"
 #include "AsebaLite/common/consts.h"
 #include "AsebaLite/common/types.h"
-#include <vector>
+#include "vector"
 
 namespace AsebaLite
 {
