@@ -95,7 +95,7 @@ void AsebaLite::AsebaBuffer::setBuffer(const uint8* data, uint16 length) {
 }
 
 void AsebaLite::AsebaBuffer::appendBuffer(const uint8* data, uint16 length) {
-  memcpy((uint8*)buffer + read_pos, data, length);
+  memcpy((uint8*)buffer + buffer_pos, data, length);
   read_pos += length;
 }
 
@@ -127,10 +127,10 @@ void AsebaLite::AsebaBuffer::writeBufferAll(TCPServer aseba_tcp) {
 }
 
 bool AsebaLite::AsebaBuffer::messageReady() {
-  if (read_pos >= 6) {
+  if (buffer_pos >= 6) {
     uint16 payload_length;
     memcpy(&payload_length, buffer, 2);
-    if (read_pos >= payload_length + 6)
+    if (buffer_pos >= payload_length + 6)
       return true;
   }
   return false;
