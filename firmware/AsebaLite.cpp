@@ -99,10 +99,9 @@ void AsebaLite::AsebaBuffer::appendBuffer(const uint8* data, uint16 length) {
   read_pos += length;
 }
 
-uint16 AsebaLite::AsebaBuffer::getBuffer(uint8* data, uint16 maxLength, uint16* source) {
+uint16 AsebaLite::AsebaBuffer::getBuffer(uint8* data, uint16 maxLength) {
   uint16 payload_length;
   memcpy(&payload_length, buffer, 2);
-  memcpy( source, buffer, 2);
   uint16 length = payload_length + 6;
   length = (length < maxLength) ? length : maxLength;
   memcpy(data, (uint8*)buffer, length);
