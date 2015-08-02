@@ -2,8 +2,8 @@
 #define _ASEBA_LITE_PARTICLE_LIBRARY
 
 #include "application.h"
-#include "common/consts.h"
-#include "common/types.h"
+#include "consts.h"
+#include "types.h"
 #include "vector"
 
 namespace AsebaLite
