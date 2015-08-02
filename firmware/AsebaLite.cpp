@@ -86,17 +86,19 @@ AsebaLite::AsebaBuffer::AsebaBuffer(bool _verbose)
 // typically called in `loop()` or `setup()` functions
 
 void AsebaLite::AsebaBuffer::resetBuffer() {
+  buffer_pos = 0;
   read_pos = 0;
 }
 
 void AsebaLite::AsebaBuffer::setBuffer(const uint8* data, uint16 length) {
   memcpy((uint8*)buffer, data, length);
+  buffer_pos = length;
   read_pos = 0;
 }
 
 void AsebaLite::AsebaBuffer::appendBuffer(const uint8* data, uint16 length) {
-  memcpy((uint8*)buffer + buffer_pos, data, length);
-  read_pos += length;
+  for (unsigned int i=0; i<length; i++)
+    buffer_add_uint8(data[i]);
 }
 
 uint16 AsebaLite::AsebaBuffer::getBuffer(uint8* data, uint16 maxLength) {
