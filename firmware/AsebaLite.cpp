@@ -85,7 +85,7 @@ AsebaLite::AsebaBuffer::AsebaBuffer(bool _verbose)
 // Main API functions that the library provides
 // typically called in `loop()` or `setup()` functions
 
-void AsebaLite::AsebaBuffer::resetBuffer(const uint8* data, uint16 length) {
+void AsebaLite::AsebaBuffer::resetBuffer() {
   read_pos = 0;
 }
 

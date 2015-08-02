@@ -18,7 +18,7 @@ namespace AsebaLite
       AsebaBuffer(bool verbose);
       //void setTcpServer(TCPServer tcpserver);
 
-      void resetBuffer(const uint8* data, uint16 length);
+      void resetBuffer();
       void setBuffer(const uint8* data, uint16 length);
       void appendBuffer(const uint8* data, uint16 length);
       uint16 getBuffer(uint8* data, uint16 maxLength, uint16* source);
