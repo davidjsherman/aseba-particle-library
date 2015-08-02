@@ -1,0 +1,7 @@
+{
+    "name": "aseba-lite",
+    "version": "0.0.1",
+    "author": "David James Sherman <david.sherman@inria.fr>",
+    "license": "CeCILL-C",
+    "description": "Aseba event-based protocol for distributed robot control"
+}
