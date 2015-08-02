@@ -104,8 +104,10 @@ void AsebaLite::AsebaBuffer::appendBuffer(const uint8* data, uint16 length) {
 uint16 AsebaLite::AsebaBuffer::getBuffer(uint8* data, uint16 maxLength) {
   uint16 payload_length;
   memcpy(&payload_length, buffer, 2);
+  Serial.print("getBuffer payload length = " + String(payload_length) + ", buffer_pos = " + String(buffer_pos));
   uint16 length = payload_length + 6;
-  length = (length < maxLength) ? length : maxLength;
+  length = (length > buffer_pos) ? buffer_pos : ((length > maxLength) ? maxLength : length);
+  Serial.println("; read " + String(length));
   memcpy(data, (uint8*)buffer, length);
   return length;
 }
@@ -113,10 +115,11 @@ uint16 AsebaLite::AsebaBuffer::getBuffer(uint8* data, uint16 maxLength) {
 uint16 AsebaLite::AsebaBuffer::getBufferPayload(uint8 * data, uint16 maxLength) {
   uint16 payload_length;
   memcpy(&payload_length, buffer, 2);
-  Serial.println("getBufferPayload length = " + String(payload_length));
+  Serial.print("getBufferPayload payload length = " + String(payload_length) + ", buffer_pos = " + String(buffer_pos));
   payload_length = (payload_length < maxLength - 6) ? payload_length : maxLength;
   if (payload_length > 0)
     memcpy(data, (uint8*)buffer + 6, payload_length);
+  Serial.println("; read " + String(payload_length));
   return payload_length;
 }
 
