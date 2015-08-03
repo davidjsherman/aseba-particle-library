@@ -106,6 +106,14 @@ void AsebaLite::AsebaBuffer::sendETX() {
     Serial.print("sending ETX...");
   Serial1.write(ETX);
   Serial1.flush();
+  uint8 incomingByte;
+  int avail = Serial1.available();
+  if (avail > 0) {
+    while (avail--)
+      incomingByte = (uint8)Serial1.read();
+  }
+  if (verbose)
+    Serial.println("done.");
 }
 
 void AsebaLite::AsebaBuffer::sendENQ() {

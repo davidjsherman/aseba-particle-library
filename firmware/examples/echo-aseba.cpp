@@ -23,25 +23,8 @@ void setup() {
     
     asebaBuffer.resetBuffer();
     
-    delay(500);
-    Serial.print("sending ETX...");
-    Serial1.write(ETX);
-    Serial1.flush();
-    
-    uint8 incomingByte;
-    int avail = Serial1.available();
-    if (avail > 0) {
-        while (avail--) {
-            incomingByte = (uint8)Serial1.read();
-        }
-        Serial.print(incomingByte, HEX);
-    }
-
-    delay(500);
-    Serial.println("done.");
-    Serial.println("now available " + String(Serial1.available()));
-    Serial1.write(ACK);
-    Serial1.flush();
+    asebaBuffer.sendETX();
+    asebaBuffer.sendACK();
 }
 
 
@@ -53,12 +36,10 @@ void loop() {
     if (Serial1.available() > 0) {
         uint8 incomingByte = (uint8)Serial1.read();
         asebaBuffer.appendBuffer(&incomingByte, 1);
-        Serial.print(incomingByte, HEX);
+        // Serial.print(incomingByte, HEX);
     }
     else if (millis() - tick > 10000) {
-        Serial.print("sending ETX..." + String(tick) + "...");
-        Serial1.write(ETX);
-        Serial1.flush();
+        asebaBuffer.sendETX();
     }
     tick = millis();
 
@@ -78,9 +59,7 @@ void loop() {
         //Serial.println();
         //Serial.println("Payload length " + String(length));
         asebaBuffer.resetBuffer();
-        Serial1.write(ACK);
-        Serial1.flush();
-        Serial.print("ACK: ");
+        asebaBuffer.sendACK();
     }
 
     digitalWrite(led, HIGH);
