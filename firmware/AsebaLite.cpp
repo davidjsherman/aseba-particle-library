@@ -77,13 +77,66 @@ AsebaLite::AsebaBuffer::AsebaBuffer(bool _verbose)
 }
 
 // Initializers that should be called in the `setup()` function
-// void AsebaLite::AsebaBuffer::setTcpServer(TCPServer tcpserver)
-// {
-//   aseba_tcp = tcpserver;
-// }
+// Private
+unsigned int AsebaLite::AsebaBuffer::waitAck() {
+  if (verbose)
+    Serial.println("# waiting ACK");
+  while (true) {
+    int avail = Serial1.available();
+    if (avail <= 0)
+      continue;
+    byte incomingByte = Serial1.read();
+    switch (incomingByte) {
+    case ACK:
+      if (verbose)
+	Serial.println("# ACK received");
+      return incomingByte;
+    case ETX:
+      resetConnection();
+      return incomingByte;
+    }
+  }
+}
 
 // Main API functions that the library provides
 // typically called in `loop()` or `setup()` functions
+
+void AsebaLite::AsebaBuffer::sendETX() {
+  if (verbose)
+    Serial.print("sending ETX...");
+  Serial1.write(ETX);
+  Serial1.flush();
+}
+
+void AsebaLite::AsebaBuffer::sendENQ() {
+  if (verbose)
+    Serial.print("sending ENQ...");
+  Serial1.write(ENQ);
+  Serial1.flush();
+}
+
+void AsebaLite::AsebaBuffer::sendACK() {
+  Serial.print("sending ACK...");
+  Serial1.write(ACK);
+  Serial1.flush();
+}
+
+void AsebaLite::AsebaBuffer::resetConnection() {
+  if (verbose)
+    Serial.print("# ETX received, resetting connection...");
+  int avail = Serial1.available();
+  while (avail--)
+    byte incomingByte = Serial1.read();
+  delay(2000);
+  if (verbose)
+    Serial.println("ready.");
+}
+
+void AsebaLite::AsebaBuffer::handleETX() {
+  int avail = Serial1.available();
+  if (avail > 0 && Serial1.peek() == ETX)
+    resetConnection();
+}
 
 void AsebaLite::AsebaBuffer::resetBuffer() {
   buffer_pos = 0;
@@ -123,10 +176,9 @@ uint16 AsebaLite::AsebaBuffer::getBufferPayload(uint8 * data, uint16 maxLength) 
   return payload_length;
 }
 
-void AsebaLite::AsebaBuffer::writeBufferAll(TCPServer aseba_tcp) {
-  Spark.publish("beacon","writing "+String(buffer_pos)+" from buffer");
+void AsebaLite::AsebaBuffer::writeBuffer() {
+  waitAck();
   Serial1.write(buffer, buffer_pos);
-  //aseba_tcp.write(buffer, buffer_pos);
   parseBuffer();
 }
 
@@ -526,12 +578,12 @@ void AsebaLite::AsebaBuffer::parseBuffer() {
 }
 
 void AsebaLite::AsebaBuffer::messageUserMessage(int type, std::vector<sint16> data) {
-    buffer_pos = 0;
-	buffer_add_uint16(0 + data.size()*2); // length in bytes
-	buffer_add_uint16(0x0009); // source
-	buffer_add_uint16(type); // type
-	for (std::vector<sint16>::iterator it = data.begin(); it != data.end(); ++it)
-        buffer_add_sint16( *it );
+  buffer_pos = 0;
+  buffer_add_uint16(0 + data.size()*2); // length in bytes
+  buffer_add_uint16(0x0009); // source
+  buffer_add_uint16(type); // type
+  for (std::vector<sint16>::iterator it = data.begin(); it != data.end(); ++it)
+    buffer_add_sint16( *it );
 }
 
 void AsebaLite::AsebaBuffer::messageBootloaderReset() {

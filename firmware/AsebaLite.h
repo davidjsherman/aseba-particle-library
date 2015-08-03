@@ -6,17 +6,27 @@
 #include "types.h"
 #include "vector"
 
+#define ENQ 0x05
+#define ACK 0x06
+#define NAK 0x15
+#define ETX 0x03
+
 namespace AsebaLite
 {
   class AsebaBuffer
   {
     private:
       bool verbose;
-      //TCPServer aseba_tcp;
+      unsigned int waitAck();
     public:
       AsebaBuffer();
       AsebaBuffer(bool verbose);
       //void setTcpServer(TCPServer tcpserver);
+      void resetConnection();
+      void handleETX();
+      void sendETX();
+      void sendENQ();
+      void sendACK();
 
       void resetBuffer();
       void setBuffer(const uint8* data, uint16 length);
@@ -27,7 +37,7 @@ namespace AsebaLite
       bool messageReady();
       
       void parseBuffer();
-      void writeBufferAll(TCPServer aseba_tcp);
+      void writeBuffer();
 
       void messageUserMessage(int type, std::vector<sint16> data);
       void messageBootloaderReset();
