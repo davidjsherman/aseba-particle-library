@@ -32,7 +32,7 @@ void loop() {
   //    monitor.report();
   digitalWrite(led, LOW);
 
-  asebaBuffer.handleETX();
+  //asebaBuffer.handleETX();
 
   digitalWrite(phi, LOW);
   delay(1000);

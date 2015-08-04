@@ -87,13 +87,13 @@ unsigned int AsebaLite::AsebaBuffer::waitAck() {
       continue;
     byte incomingByte = Serial1.read();
     switch (incomingByte) {
-    case ACK:
-      if (verbose)
-	Serial.println("# ACK received");
-      return incomingByte;
-    case ETX:
-      resetConnection();
-      return incomingByte;
+      case ACK:
+        if (verbose)
+          Serial.println("# ACK received");
+        return incomingByte;
+      case ETX:
+        resetConnection();
+        return incomingByte;
     }
   }
 }
@@ -106,6 +106,7 @@ void AsebaLite::AsebaBuffer::sendETX() {
     Serial.print("sending ETX...");
   Serial1.write(ETX);
   Serial1.flush();
+  // discard any partial message
   uint8 incomingByte;
   int avail = Serial1.available();
   if (avail > 0) {
@@ -132,18 +133,20 @@ void AsebaLite::AsebaBuffer::sendACK() {
 void AsebaLite::AsebaBuffer::resetConnection() {
   if (verbose)
     Serial.print("# ETX received, resetting connection...");
-  int avail = Serial1.available();
-  while (avail--)
-    byte incomingByte = Serial1.read();
-  delay(2000);
-  if (verbose)
-    Serial.println("ready.");
+//  int avail = Serial1.available();
+//  while (avail--)
+//    byte incomingByte = Serial1.read();
+//  if (verbose)
+//    Serial.println("ready.");
+    // Here we could call a resetConnection callback
 }
 
 void AsebaLite::AsebaBuffer::handleETX() {
   int avail = Serial1.available();
-  if (avail > 0 && Serial1.peek() == ETX)
+  if (avail > 0 && Serial1.peek() == ETX) {
+    (void)Serial1.read(); // discard ETX
     resetConnection();
+  }
 }
 
 void AsebaLite::AsebaBuffer::resetBuffer() {

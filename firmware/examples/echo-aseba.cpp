@@ -1,5 +1,5 @@
 #include "AsebaLite/AsebaLite.h"
-#include "Monitor/Monitor.h"
+//#include "Monitor/Monitor.h"
 
 int led = D7; // built-in LED
 int phi = D0;
@@ -14,15 +14,15 @@ void setup() {
     pinMode(phi, OUTPUT);    // initialize D0 pin as digital output
     digitalWrite(led, LOW);
     digitalWrite(phi, LOW);
-    
+
     Serial.begin(9600);       // usb monitor
     Serial1.begin(9600);      // tx/rx pins
     //    monitor.ledOff();
     //    monitor.begin();
     //    monitor.variable("beacon_tick",&tick, INT);
-    
+
     asebaBuffer.resetBuffer();
-    
+
     asebaBuffer.sendETX();
     asebaBuffer.sendACK();
 }
@@ -32,16 +32,21 @@ void loop() {
     //    monitor.report();
     digitalWrite(led, LOW);
     //Serial.print(".");
-    
+
     if (Serial1.available() > 0) {
         uint8 incomingByte = (uint8)Serial1.read();
         asebaBuffer.appendBuffer(&incomingByte, 1);
-        // Serial.print(incomingByte, HEX);
+        //Serial.print(incomingByte, HEX);
+        tick = millis();
+        //Serial.println(" tick = " + String(tick));
     }
     else if (millis() - tick > 10000) {
-        asebaBuffer.sendETX();
+        Serial.println(" millis() = " + String(millis()) + " tick = " + String(tick));
+        asebaBuffer.sendACK();
+        //delay(5000);
+        //asebaBuffer.sendACK();
+        tick = millis();
     }
-    tick = millis();
 
     uint8 data[500];
     uint16 m_length;
